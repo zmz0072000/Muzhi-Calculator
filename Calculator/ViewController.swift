@@ -17,28 +17,65 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var totalLabel: UILabel!
     
+    @IBOutlet weak var partySizeStepper: UIStepper!
+    
+    @IBOutlet weak var partySizeField: UITextField!
+    
+    @IBOutlet weak var eachPersonLabel: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
 
-    @IBAction func calculateTip(_ sender: Any) {
+    func calculateTip () {
         // Get bill amount from text field input
         let bill = Double(billAmountTextField.text!) ?? 0
         
-        //Get Total tip by multiplying tip and tip Percentage
+        //Get tip percentages
         let tipPercentages = [0.15, 0.18, 0.2]
-        let tip = bill * tipPercentages[tipControl.selectedSegmentIndex]
+        
+        //Get Total tip by multiplying tip and tip Percentage
+        let tipPercentageSelected = tipPercentages[tipControl.selectedSegmentIndex]
+        let tip = bill * tipPercentageSelected
+        
+        //Get party size
+        var partySize = Double(partySizeField.text!) ?? 1
+        if partySize < 1 {
+            partySize = 1
+        }
+        
+        //Calculate total and total per person
         let total = bill + tip
+        let totalPerPerson = total / partySize
         
-        //update Tip Amouunt Label
-        tipAmountLabel.text = String(format: "$%.2f", tip)
-        
-        //update total amount label
-        totalLabel.text = String(format: "$%.2f", total)
-        
+        //Update text fields
+        tipAmountLabel.text = String(format: "$ %.2f", tip)
+        totalLabel.text = String(format: "$ %.2f", total)
+        eachPersonLabel.text = String(format: "$ %.2f", totalPerPerson)
     }
+    
+    @IBAction func billAmountChange(_ sender: Any) {
+        calculateTip()
+    }
+    
+    
+    
+    @IBAction func tipControlChange(_ sender: Any) {
+        calculateTip()
+    }
+    
+    @IBAction func partySizeEdited(_ sender: Any) {
+        partySizeStepper.value = Double (partySizeField.text!) ?? 1
+        calculateTip()
+    }
+    
+    @IBAction func partySizeChange(_ sender: Any) {
+        partySizeField.text = String (Int (partySizeStepper.value))
+        calculateTip()
+    }
+    
     
 }
 
